@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Random Word Picker</title>
+<title>Word picker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet">
@@ -13,13 +13,16 @@
     --ink: #10303A;
     --ink-soft: #456670;
     --line: #5F808A;
+    --line-soft: rgba(16, 48, 58, 0.14);
     --sea: #17677A;
     --sea-deep: #124F5E;
     --focus: #0B62A4;
+    --panel: #F9FBFB;
     --font: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, -apple-system, sans-serif;
   }
 
   *, *::before, *::after { box-sizing: border-box; }
+  [hidden] { display: none !important; }
 
   body {
     margin: 0;
@@ -29,6 +32,7 @@
     font-family: var(--font);
     -webkit-text-size-adjust: 100%;
   }
+  button { font-family: var(--font); }
 
   .page {
     max-width: 1400px;
@@ -36,120 +40,75 @@
     padding: clamp(1rem, 3vw, 2.25rem);
   }
 
-  header h1 {
-    margin: 0;
-    font-size: clamp(1.7rem, 3.2vw, 2.5rem);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1.05;
-  }
-
-  .back {
-    display: inline-block;
-    margin-bottom: 1rem;
-    color: var(--ink-soft);
-    font-size: 0.95rem;
-    text-decoration: none;
-  }
+  /* ---------- Title, tabs and the way back (as on the Word Lab pages) ---------- */
+  .top { display: flex; flex-wrap: wrap; align-items: flex-end; column-gap: clamp(1rem, 2.5vw, 2rem); }
+  .top h1 { margin: 0 0 0.6rem; font-size: clamp(1.4rem, 2.8vw, 2.1rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; }
+  .back { margin: 0 0 0.75rem auto; color: var(--ink-soft); font-size: 0.9rem; text-decoration: none; white-space: nowrap; }
   .back:hover { text-decoration: underline; }
   .back:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 
-  header p {
-    margin: 0.35rem 0 0;
-    color: var(--ink-soft);
-    font-size: 1rem;
+  /* The two tabs sit on top of the frame: Word picker and Word Bingo */
+  .tabs { display: flex; gap: 0.2rem; }
+  .tabs button {
+    display: flex; align-items: center;
+    height: 2.75rem; padding: 0 1.15rem; border: 0; border-radius: 0.7rem 0.7rem 0 0;
+    background: transparent; color: var(--ink-soft);
+    font-size: 1rem; font-weight: 700; white-space: nowrap; cursor: pointer;
   }
+  .tabs button:hover { background: rgba(255, 255, 255, 0.55); color: var(--ink); }
+  .tabs button[aria-selected="true"] { background: var(--panel); color: var(--ink); }
+  .tabs button:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }
+
+  /* ---------- The frame everything sits on ---------- */
+  .frame { background: var(--panel); border-radius: 0.9rem; padding: clamp(0.8rem, 2vw, 1.4rem); }
+  .source { margin: 0; color: var(--ink-soft); font-size: 1rem; }
 
   /* Controls */
-  .controls {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1rem 1.75rem;
-    margin: 1.5rem 0 1.25rem;
-  }
-
-  .count {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.6rem 0.9rem;
-  }
-
-  .count-label { font-weight: 600; }
-
-  .count-options { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-
-  .count-options label { position: relative; display: block; }
-
-  .count-options input {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    opacity: 0;
-    cursor: pointer;
-  }
-
-  .count-options span {
-    display: grid;
-    place-items: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    border: 2px solid var(--line);
-    border-radius: 0.6rem;
-    font-size: 1.1rem;
-    font-weight: 700;
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.75rem; margin: 0.8rem 0 1.1rem; }
+  .group { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 0.9rem; }
+  .group-label { font-weight: 600; }
+  .choices { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .choices label { position: relative; display: block; }
+  .choices input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+  .choices span {
+    display: grid; place-items: center;
+    min-width: 2.75rem; height: 2.75rem; padding: 0 1rem;
+    border: 2px solid var(--line); border-radius: 0.6rem;
+    font-size: 1.1rem; font-weight: 700;
     transition: background-color 0.15s, border-color 0.15s, color 0.15s;
   }
+  .choices.small span { height: 2.4rem; padding: 0 0.8rem; font-size: 1rem; }
+  .choices input:not(:checked):hover + span { border-color: var(--ink); }
+  .choices input:checked + span { background: var(--ink); border-color: var(--ink); color: var(--mist); }
+  .choices input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 3px; }
 
-  .count-options input:not(:checked):hover + span { border-color: var(--ink); }
-
-  .count-options input:checked + span {
-    background: var(--ink);
-    border-color: var(--ink);
-    color: var(--mist);
+  .primary, .secondary {
+    height: 2.75rem; padding: 0 1.6rem;
+    border: 0; border-radius: 0.6rem;
+    font-size: 1.05rem; font-weight: 700; cursor: pointer;
   }
+  .primary { background: var(--sea); color: #fff; }
+  .primary:hover:not(:disabled) { background: var(--sea-deep); }
+  .secondary { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px var(--line); }
+  .secondary:hover:not(:disabled) { box-shadow: inset 0 0 0 2px var(--ink); }
+  .primary:active:not(:disabled), .secondary:active:not(:disabled) { transform: translateY(1px); }
+  .primary:focus-visible, .secondary:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+  .primary:disabled, .secondary:disabled { opacity: 0.35; cursor: default; }
 
-  .count-options input:focus-visible + span {
-    outline: 3px solid var(--focus);
-    outline-offset: 3px;
-  }
-
-  .primary {
-    height: 2.75rem;
-    padding: 0 1.6rem;
-    border: 0;
-    border-radius: 0.6rem;
-    background: var(--sea);
-    color: #fff;
-    font: inherit;
-    font-size: 1.05rem;
-    font-weight: 700;
-    cursor: pointer;
-  }
-  .primary:hover { background: var(--sea-deep); }
-  .primary:active { transform: translateY(1px); }
-  .primary:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
-
-  /* Word tiles */
+  /* ---------- Tab 1: word tiles ---------- */
   .grid {
     --cols: 3;
     --rows: 1;
     --gap: clamp(0.6rem, 1.6vw, 1.1rem);
-    --chrome: 18rem;
+    --chrome: 20.5rem;   /* the room taken by everything above and below the tiles */
     --h: clamp(7.5rem, calc((100vh - var(--chrome) - (var(--rows) - 1) * var(--gap)) / var(--rows)), 36rem);
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: var(--gap);
   }
-
   @supports (height: 100svh) {
-    .grid {
-      --h: clamp(7.5rem, calc((100svh - var(--chrome) - (var(--rows) - 1) * var(--gap)) / var(--rows)), 36rem);
-    }
+    .grid { --h: clamp(7.5rem, calc((100svh - var(--chrome) - (var(--rows) - 1) * var(--gap)) / var(--rows)), 36rem); }
   }
 
   .tile {
@@ -173,16 +132,11 @@
   .tile:focus-visible { outline: 4px solid var(--focus); outline-offset: 3px; }
 
   .swap {
-    position: absolute;
-    top: 0.85rem;
-    left: 1.1rem;
-    font-size: 0.9rem;
-    font-weight: 600;
-    opacity: 0;
-    transition: opacity 0.15s;
+    position: absolute; top: 0.85rem; left: 1.1rem;
+    font-size: 0.9rem; font-weight: 600;
+    opacity: 0; transition: opacity 0.15s;
   }
-  .tile:hover .swap,
-  .tile:focus-visible .swap { opacity: 0.7; }
+  .tile:hover .swap, .tile:focus-visible .swap { opacity: 0.7; }
 
   .word {
     display: block;
@@ -196,58 +150,143 @@
     hyphens: none;
   }
 
-  @keyframes settle {
-    from { opacity: 0; transform: translateY(0.4rem); }
-    to   { opacity: 1; transform: none; }
-  }
-  .word.fresh { animation: settle 0.22s ease-out; }
+  @keyframes settle { from { opacity: 0; transform: translateY(0.4rem); } to { opacity: 1; transform: none; } }
+  .fresh { animation: settle 0.22s ease-out; }
 
-  .hint {
-    margin: 1.25rem 0 0;
-    color: var(--ink-soft);
-    font-size: 0.95rem;
-  }
+  .hint { margin: 1.1rem 0 0; color: var(--ink-soft); font-size: 0.95rem; }
 
-  .sr {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-  }
+  /* ---------- Tab 2: Word Bingo ---------- */
+  .bingo { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(0.8rem, 2vw, 1.4rem); align-items: start; }
+  .caller { display: flex; flex-direction: column; gap: 0.9rem; }
 
+  .call-tile {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem;
+    height: clamp(11rem, calc(100vh - 27rem), 26rem);
+    padding: clamp(1rem, 3vw, 2rem);
+    border-radius: 0.9rem;
+    background: var(--c, #A8D5CB);
+    text-align: center;
+    transition: background-color 120ms linear;
+  }
+  @supports (height: 100svh) {
+    .call-tile { height: clamp(11rem, calc(100svh - 27rem), 26rem); }
+  }
+  .call-tile.idle { background: var(--mist); border: 3px dashed var(--line-soft); color: var(--ink-soft); }
+  .call-tile .called-word {
+    font-size: clamp(2.6rem, 6.5vw, 6rem);
+    font-weight: 700; letter-spacing: -0.02em; line-height: 1.02;
+    text-wrap: balance;
+  }
+  .call-tile .called-num { font-size: 0.95rem; font-weight: 600; opacity: 0.6; }
+  .call-tile.idle .called-word { font-size: clamp(1.2rem, 2.6vw, 1.7rem); line-height: 1.3; max-width: 24rem; }
+  .call-tile.idle .called-num { display: none; }
+
+  .buttons { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .buttons .primary { flex: 1 1 10rem; height: 3.25rem; font-size: 1.2rem; }
+  .buttons .secondary { height: 3.25rem; }
+
+  .bank-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.3rem 1rem; margin: 0 0 0.6rem; }
+  .bank-head h2 { margin: 0; font-size: 1.1rem; font-weight: 700; }
+  .bank-head span { color: var(--ink-soft); font-size: 0.95rem; font-variant-numeric: tabular-nums; }
+
+  .bank { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); gap: 0.4rem; }
+  .bank li {
+    display: flex; align-items: center; min-height: 2.6rem; padding: 0.35rem 0.8rem;
+    border-radius: 0.6rem; background: var(--mist);
+    font-size: 1.1rem; font-weight: 600; line-height: 1.15;
+    transition: background-color 0.15s, color 0.15s;
+  }
+  .bank li.called { background: var(--ink); color: var(--mist); }
+  .bank li.latest { background: var(--sea); color: #fff; }
+
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  @media (max-width: 860px) {
+    .bingo { grid-template-columns: 1fr; }
+    .call-tile { height: clamp(9rem, 30vh, 16rem); }
+  }
   @media (max-width: 640px) {
-    .grid { --chrome: 24rem; }
+    .tabs { order: 3; flex-basis: 100%; }
+    .tabs button { padding: 0 0.9rem; }
+    .grid { --chrome: 26rem; }
+    .bank { grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr)); }
+    .bank li { font-size: 1rem; }
   }
-
   @media (prefers-reduced-motion: reduce) {
-    .word.fresh { animation: none; }
-    .count-options span,
-    .swap { transition: none; }
+    .fresh { animation: none; }
+    .choices span, .swap, .bank li, .call-tile { transition: none; }
   }
 </style>
 </head>
 <body>
 <main class="page">
-  <a class="back" href="./">&larr; Selectors</a>
-
-  <header>
-    <h1>Word picker</h1>
-    <p>Objects and animals from the Cambridge A2 Key list.</p>
-  </header>
-
-  <div class="controls">
-    <div class="count" role="radiogroup" aria-labelledby="count-label">
-      <span class="count-label" id="count-label">How many words?</span>
-      <div class="count-options" id="count-options"></div>
+  <div class="top">
+    <h1>Words</h1>
+    <div class="tabs" role="tablist" aria-label="Word games" id="tabs">
+      <button type="button" role="tab" id="tab-picker" data-mode="picker" aria-controls="picker-panel" aria-selected="true">Word picker</button>
+      <button type="button" role="tab" id="tab-bingo" data-mode="bingo" aria-controls="bingo-panel" aria-selected="false" tabindex="-1">Word Bingo</button>
     </div>
-    <button type="button" class="primary" id="new-words">New words</button>
+    <a class="back" href="./">&larr; Selectors</a>
   </div>
 
-  <div class="grid" id="grid"></div>
+  <div class="frame">
+  <!-- Tab 1, Word picker: one to seven random words -->
+  <section id="picker-panel" role="tabpanel" aria-labelledby="tab-picker">
+    <p class="source">Random objects and animals at A2 level.</p>
 
-  <p class="hint">Click a word to swap just that one. Changing the number keeps the words you already have.</p>
+    <div class="controls">
+      <div class="group" role="radiogroup" aria-labelledby="count-label">
+        <span class="group-label" id="count-label">How many words?</span>
+        <div class="choices" id="count-options"></div>
+      </div>
+      <button type="button" class="primary" id="new-words">New words</button>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <p class="hint">Click a word to swap just that one. Changing the number keeps the words you already have.</p>
+  </section>
+
+  <!-- Tab 2, Word Bingo: copy nine words from the bank, then call them one by one -->
+  <section id="bingo-panel" role="tabpanel" aria-labelledby="tab-bingo" hidden>
+    <p class="source">Students copy any 9 words from the bank into a 3 × 3 grid. Call the words one by one; three in a line is Bingo!</p>
+
+    <div class="controls">
+      <div class="group" role="radiogroup" aria-labelledby="topic-label">
+        <span class="group-label" id="topic-label">Topic</span>
+        <div class="choices small" id="topic-options"></div>
+      </div>
+      <div class="group" role="radiogroup" aria-labelledby="size-label">
+        <span class="group-label" id="size-label">Bank</span>
+        <div class="choices small" id="size-options"></div>
+      </div>
+      <button type="button" class="primary" id="new-bank">New game</button>
+    </div>
+
+    <div class="bingo">
+      <div class="caller">
+        <div class="call-tile idle" id="call-tile" aria-live="polite">
+          <span class="called-num" id="called-num"></span>
+          <span class="called-word" id="called-word">Copy 9 words into your grid, then press Call word.</span>
+        </div>
+        <div class="buttons">
+          <button type="button" class="primary" id="call-btn">Call word</button>
+          <button type="button" class="secondary" id="undo-btn" disabled>Undo</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="bank-head">
+          <h2>Bingo bank</h2>
+          <span id="bank-count"></span>
+        </div>
+        <ul class="bank" id="bank"></ul>
+      </div>
+    </div>
+
+    <p class="hint">Called words go dark in the bank, so you can check a Bingo! card. Twist: students can also cross off a word they haven't got by linking it to one they have in a sentence, if the class agrees.</p>
+  </section>
+  </div>
   <p class="sr" role="status" id="status"></p>
 </main>
 
@@ -337,15 +376,7 @@ const ALL = [...new Set(Object.values(WORDS).flat())];
 const COLOURS = ["#A8D5CB", "#F2D9A6", "#F4B5A0", "#C9C3EA", "#A9CCEB", "#F0C2D3", "#C7DE9F"];
 const MAX = COLOURS.length;
 
-const grid = document.getElementById("grid");
 const statusEl = document.getElementById("status");
-const options = document.getElementById("count-options");
-
-let count = loadCount();
-let shown = [];
-let deck = [];
-
-/* ---------- picking ---------- */
 
 function shuffle(list) {
   for (let i = list.length - 1; i > 0; i--) {
@@ -354,6 +385,17 @@ function shuffle(list) {
   }
   return list;
 }
+
+/* ===============================================================
+   Tab 1: Word picker
+================================================================ */
+
+const grid = document.getElementById("grid");
+const options = document.getElementById("count-options");
+
+let count = loadCount();
+let shown = [];
+let deck = [];
 
 /* Draws from a shuffled deck so words don't come round again until the pool has been used. */
 function draw(avoid) {
@@ -389,8 +431,6 @@ function setCount(n) {
   render();
 }
 
-/* ---------- storage ---------- */
-
 function loadCount() {
   try {
     const value = parseInt(localStorage.getItem("wordpicker.count"), 10);
@@ -402,8 +442,6 @@ function loadCount() {
 function saveCount() {
   try { localStorage.setItem("wordpicker.count", String(count)); } catch (e) { /* ignore */ }
 }
-
-/* ---------- rendering ---------- */
 
 function makeTile(index) {
   const tile = document.createElement("button");
@@ -436,6 +474,7 @@ function render() {
 
 function layout() {
   const n = shown.length;
+  if (!n) return;
   const w = window.innerWidth;
   let cols;
   if (w < 640) cols = Math.min(n, 2);
@@ -450,7 +489,7 @@ function layout() {
 /* One shared size for every word, shrunk tile-by-tile only when a long word would overflow. */
 function fit() {
   const tile = grid.firstElementChild;
-  if (!tile) return;
+  if (!tile || !tile.clientWidth) return;   // the tab is hidden; sized again when it opens
   const style = getComputedStyle(tile);
   const innerW = tile.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
   const innerH = tile.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
@@ -467,12 +506,9 @@ function fit() {
   });
 }
 
-/* ---------- controls ---------- */
-
 for (let n = 1; n <= MAX; n++) {
   const label = document.createElement("label");
-  label.innerHTML =
-    '<input type="radio" name="count" value="' + n + '"><span>' + n + "</span>";
+  label.innerHTML = '<input type="radio" name="count" value="' + n + '"><span>' + n + "</span>";
   label.querySelector("input").addEventListener("change", () => setCount(n));
   options.appendChild(label);
 }
@@ -485,9 +521,185 @@ function syncRadios() {
 
 document.getElementById("new-words").addEventListener("click", newWords);
 
-/* Keys: 1–7 change the number, N picks new words. */
+/* ===============================================================
+   Tab 2: Word Bingo
+   A bank of words from one topic. Students copy nine of them into
+   a 3 x 3 grid, then the words are called in a random order.
+   To add a topic, add a line here using the groups in WORDS above.
+================================================================ */
+
+const TOPICS = [
+  { id: "any",       label: "Any",       words: ALL },
+  { id: "animals",   label: "Animals",   words: WORDS.animals },
+  { id: "food",      label: "Food",      words: WORDS.food },
+  { id: "clothes",   label: "Clothes",   words: WORDS.clothes },
+  { id: "home",      label: "Home",      words: WORDS.home.concat(WORDS.kitchen) },
+  { id: "school",    label: "School",    words: WORDS.school },
+  { id: "play",      label: "Free time", words: WORDS.play },
+  { id: "transport", label: "Transport", words: WORDS.vehicles.concat(WORDS.travel) },
+  { id: "nature",    label: "Nature",    words: WORDS.nature },
+  { id: "body",      label: "Body",      words: WORDS.body },
+  { id: "places",    label: "Places",    words: WORDS.places },
+  { id: "jobs",      label: "Jobs",      words: WORDS.jobs },
+  { id: "tech",      label: "Tech",      words: WORDS.technology }
+];
+const SIZES = [12, 16, 20];
+
+const bingo = (() => {
+  const $ = (id) => document.getElementById(id);
+  const topicBox = $("topic-options"), sizeBox = $("size-options");
+  const callTile = $("call-tile"), calledWord = $("called-word"), calledNum = $("called-num");
+  const callBtn = $("call-btn"), undoBtn = $("undo-btn");
+  const bankEl = $("bank"), bankCount = $("bank-count");
+
+  let topic = "animals", size = 16;
+  try {
+    const t = localStorage.getItem("wordbingo.topic");
+    if (TOPICS.some((x) => x.id === t)) topic = t;
+    const s = parseInt(localStorage.getItem("wordbingo.size"), 10);
+    if (SIZES.includes(s)) size = s;
+  } catch (e) {}
+
+  let bank = [], toCall = [], called = [];
+  let colour = 0;
+
+  function radios(box, name, items, current, onPick) {
+    items.forEach((item) => {
+      const label = document.createElement("label");
+      label.innerHTML = '<input type="radio" name="' + name + '"><span></span>';
+      const input = label.querySelector("input");
+      label.querySelector("span").textContent = item.label;
+      input.checked = item.id === current;
+      input.addEventListener("change", () => onPick(item.id));
+      box.appendChild(label);
+    });
+  }
+
+  radios(topicBox, "topic", TOPICS, topic, (id) => {
+    topic = id;
+    try { localStorage.setItem("wordbingo.topic", id); } catch (e) {}
+    newGame();
+  });
+  radios(sizeBox, "size", SIZES.map((n) => ({ id: n, label: String(n) })), size, (n) => {
+    size = n;
+    try { localStorage.setItem("wordbingo.size", String(n)); } catch (e) {}
+    newGame();
+  });
+
+  /* A fresh bank, listed A to Z so it's easy to copy from */
+  function newGame() {
+    const words = [...new Set(TOPICS.find((x) => x.id === topic).words)];
+    bank = shuffle(words.slice()).slice(0, Math.min(size, words.length))
+      .sort((a, b) => a.localeCompare(b, "en", { sensitivity: "base" }));
+    toCall = shuffle(bank.slice());
+    called = [];
+    callTile.classList.add("idle");
+    callTile.style.removeProperty("--c");
+    calledNum.textContent = "";
+    calledWord.textContent = "Copy 9 words into your grid, then press Call word.";
+    callBtn.textContent = "Call word";
+    draw();
+  }
+
+  function call() {
+    if (!toCall.length) return;
+    called.push(toCall.pop());
+    show();
+  }
+
+  function undo() {
+    if (!called.length) return;
+    toCall.push(called.pop());
+    if (called.length) show();
+    else newGameKeepBank();
+  }
+
+  /* Undo back to the start keeps the same bank */
+  function newGameKeepBank() {
+    callTile.classList.add("idle");
+    callTile.style.removeProperty("--c");
+    calledNum.textContent = "";
+    calledWord.textContent = "Copy 9 words into your grid, then press Call word.";
+    draw();
+  }
+
+  function show() {
+    const word = called[called.length - 1];
+    colour = (colour + 1) % COLOURS.length;
+    callTile.classList.remove("idle");
+    callTile.style.setProperty("--c", COLOURS[colour]);
+    calledNum.textContent = "Word " + called.length;
+    calledWord.textContent = word;
+    calledWord.classList.remove("fresh"); void calledWord.offsetWidth; calledWord.classList.add("fresh");
+    draw();
+  }
+
+  function draw() {
+    bankEl.innerHTML = "";
+    const last = called[called.length - 1];
+    bank.forEach((word) => {
+      const li = document.createElement("li");
+      li.textContent = word;
+      if (called.includes(word)) li.className = word === last ? "called latest" : "called";
+      bankEl.appendChild(li);
+    });
+    bankCount.textContent = called.length + " of " + bank.length + " called";
+    callBtn.disabled = !toCall.length;
+    callBtn.textContent = toCall.length ? "Call word" : "All called";
+    undoBtn.disabled = !called.length;
+    if (!toCall.length && called.length) statusEl.textContent = "All words called.";
+  }
+
+  callBtn.addEventListener("click", call);
+  undoBtn.addEventListener("click", undo);
+  $("new-bank").addEventListener("click", newGame);
+
+  newGame();
+  return { call };
+})();
+
+/* ===============================================================
+   The tabs
+================================================================ */
+
+const tabs = [...document.querySelectorAll("#tabs [role=tab]")];
+let mode = "picker";
+
+function chooseMode(next, remember) {
+  mode = next;
+  tabs.forEach((t) => {
+    const on = t.dataset.mode === mode;
+    t.setAttribute("aria-selected", on);
+    t.tabIndex = on ? 0 : -1;
+  });
+  document.getElementById("picker-panel").hidden = mode !== "picker";
+  document.getElementById("bingo-panel").hidden = mode !== "bingo";
+  document.title = mode === "bingo" ? "Word Bingo" : "Word picker";
+  if (mode === "picker") layout();
+  if (remember) { try { localStorage.setItem("words.mode", mode); } catch (e) {} }
+}
+tabs.forEach((t, i) => {
+  t.addEventListener("click", () => chooseMode(t.dataset.mode, true));
+  t.addEventListener("keydown", (e) => {
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    const to = tabs[(i + 1) % tabs.length];
+    chooseMode(to.dataset.mode, true);
+    to.focus();
+  });
+});
+
+/* Keys. Word picker: 1–7 change the number, N picks new words.
+   Word Bingo: Space calls the next word. */
 document.addEventListener("keydown", (event) => {
   if (event.ctrlKey || event.metaKey || event.altKey) return;
+  if (event.target.closest && event.target.closest("#tabs")) return;
+  if (mode === "bingo") {
+    if (event.code === "Space" && !(event.target instanceof HTMLButtonElement)) {
+      event.preventDefault();
+      bingo.call();
+    }
+    return;
+  }
   if (/^[1-7]$/.test(event.key)) setCount(Number(event.key));
   else if (event.key === "n" || event.key === "N") newWords();
 });
@@ -497,13 +709,22 @@ window.addEventListener("resize", () => {
   cancelAnimationFrame(frame);
   frame = requestAnimationFrame(layout);
 });
-
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
 
 /* ---------- start ---------- */
 
 syncRadios();
 newWords();
+
+/* Open on the tab in the link, or the last one used: ?mode=picker or ?mode=bingo */
+let startMode = "picker";
+try {
+  const saved = localStorage.getItem("words.mode");
+  if (saved === "picker" || saved === "bingo") startMode = saved;
+} catch (e) {}
+const asked = new URLSearchParams(location.search).get("mode");
+if (asked === "picker" || asked === "bingo") startMode = asked;
+chooseMode(startMode, false);
 </script>
 </body>
 </html>
