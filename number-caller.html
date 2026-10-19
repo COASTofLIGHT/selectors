@@ -13,15 +13,17 @@
     --ink: #10303A;
     --ink-soft: #456670;
     --line: #5F808A;
+    --line-soft: rgba(16, 48, 58, 0.14);
     --sea: #17677A;
     --sea-deep: #124F5E;
     --focus: #0B62A4;
+    --panel: #F9FBFB;
+    --coral: #F4B5A0;
     --font: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, -apple-system, sans-serif;
     --tile-c: #F2D9A6;
   }
 
   *, *::before, *::after { box-sizing: border-box; }
-
   [hidden] { display: none !important; }
 
   body {
@@ -32,246 +34,140 @@
     font-family: var(--font);
     -webkit-text-size-adjust: 100%;
   }
+  button { font-family: var(--font); }
 
   .page {
-    max-width: 1000px;
+    max-width: 1100px;
     margin: 0 auto;
     padding: clamp(1rem, 3vw, 2.25rem);
   }
 
-  header h1 {
-    margin: 0;
-    font-size: clamp(1.7rem, 3.2vw, 2.5rem);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1.05;
-  }
-
-  .back {
-    display: inline-block;
-    margin-bottom: 1rem;
-    color: var(--ink-soft);
-    font-size: 0.95rem;
-    text-decoration: none;
-  }
+  /* ---------- Title, tabs and the way back (as on the Word Lab pages) ---------- */
+  .top { display: flex; flex-wrap: wrap; align-items: flex-end; column-gap: clamp(1rem, 2.5vw, 2rem); }
+  .top h1 { margin: 0 0 0.6rem; font-size: clamp(1.4rem, 2.8vw, 2.1rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; }
+  .back { margin: 0 0 0.75rem auto; color: var(--ink-soft); font-size: 0.9rem; text-decoration: none; white-space: nowrap; }
   .back:hover { text-decoration: underline; }
   .back:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 
-  /* The title, with the two tabs beside it */
-  header {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem 1.2rem;
-  }
-
-  .tabs {
-    display: inline-flex;
-    height: 2.6rem;
-    border: 2px solid var(--line);
-    border-radius: 0.6rem;
-    overflow: hidden;
-  }
+  /* The two tabs sit on top of the frame: Numbers and Number Rush */
+  .tabs { display: flex; gap: 0.2rem; }
   .tabs button {
-    padding: 0 1rem;
-    border: 0;
-    background: transparent;
-    color: var(--ink);
-    font: inherit;
-    font-size: 0.95rem;
-    font-weight: 700;
-    cursor: pointer;
+    display: flex; align-items: center;
+    height: 2.75rem; padding: 0 1.15rem; border: 0; border-radius: 0.7rem 0.7rem 0 0;
+    background: transparent; color: var(--ink-soft);
+    font-size: 1rem; font-weight: 700; white-space: nowrap; cursor: pointer;
   }
-  .tabs button[aria-selected="true"] { background: var(--ink); color: #fff; }
+  .tabs button:hover { background: rgba(255, 255, 255, 0.55); color: var(--ink); }
+  .tabs button[aria-selected="true"] { background: var(--panel); color: var(--ink); }
   .tabs button:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }
 
-  .lead {
-    margin: 0.35rem 0 0;
-    color: var(--ink-soft);
-    font-size: 1rem;
-  }
+  /* ---------- The frame everything sits on ---------- */
+  .frame { background: var(--panel); border-radius: 0.9rem; padding: clamp(0.8rem, 2vw, 1.4rem); }
+  .panel { display: flex; flex-direction: column; gap: 0.9rem; }
+  .source { margin: 0; color: var(--ink-soft); font-size: 1rem; }
 
-  /* Controls */
-  .controls {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 1rem 1.75rem;
-    margin: 1.5rem 0 1.25rem;
-  }
-
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-
-  .field label {
-    font-weight: 600;
-    font-size: 0.95rem;
-  }
-
+  /* From and To */
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.75rem; }
+  .field { display: flex; align-items: center; gap: 0.6rem; }
+  .field label { font-weight: 600; }
   .field input {
-    width: 6.5rem;
-    height: 2.75rem;
-    padding: 0 0.9rem;
-    border: 2px solid var(--line);
-    border-radius: 0.6rem;
-    background: #fff;
-    color: var(--ink);
-    font: inherit;
-    font-size: 1.1rem;
-    font-weight: 700;
+    width: 6.5rem; height: 2.75rem; padding: 0 0.9rem;
+    border: 2px solid var(--line); border-radius: 0.6rem;
+    background: #fff; color: var(--ink);
+    font: inherit; font-size: 1.1rem; font-weight: 700;
   }
-  .field input:focus-visible {
-    outline: 3px solid var(--focus);
-    outline-offset: 2px;
-  }
+  .field input:hover:not(:disabled) { border-color: var(--ink); }
+  .field input:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .field input:disabled { opacity: 0.5; }
 
-  .buttons {
-    display: flex;
-    gap: 0.6rem;
-  }
+  .error { flex-basis: 100%; margin: 0; color: #8A2E1E; font-size: 0.95rem; font-weight: 600; }
+  .error:empty { display: none; }
 
-  .primary, .secondary {
-    height: 2.75rem;
-    padding: 0 1.6rem;
-    border: 0;
-    border-radius: 0.6rem;
-    font: inherit;
-    font-size: 1.05rem;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  .primary { background: var(--sea); color: #fff; }
-  .primary:hover { background: var(--sea-deep); }
-  .primary:disabled { background: var(--line); cursor: not-allowed; }
-
-  .secondary {
-    background: transparent;
-    color: var(--ink);
-    border: 2px solid var(--line);
-  }
-  .secondary:hover { border-color: var(--ink); }
-
-  .primary:active:not(:disabled), .secondary:active { transform: translateY(1px); }
-  .primary:focus-visible, .secondary:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
-
-  .error {
-    flex-basis: 100%;
-    color: #8A2E1E;
-    font-size: 0.95rem;
-    font-weight: 600;
-    min-height: 1.2em;
-  }
-
-  /* Tile */
+  /* ---------- The number tile ---------- */
   .tile {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     width: 100%;
-    height: clamp(14rem, 46vh, 26rem);
+    height: clamp(11rem, calc(100vh - 25rem), 30rem);
     padding: clamp(1rem, 3vw, 2rem);
-    border: 0;
-    border-radius: 0.9rem;
+    border: 0; border-radius: 0.9rem;
     overflow: hidden;
-    background: var(--tile-c);
-    color: var(--ink);
-    font: inherit;
-    cursor: pointer;
+    background: var(--tile-c); color: var(--ink);
+    font: inherit; cursor: pointer;
   }
-  .tile:hover { filter: brightness(0.96); }
+  @supports (height: 100svh) {
+    .tile { height: clamp(11rem, calc(100svh - 25rem), 30rem); }
+  }
+  .tile:hover { filter: brightness(0.97); }
   .tile:focus-visible { outline: 4px solid var(--focus); outline-offset: 3px; }
-  .tile:disabled { cursor: default; }
-
-  .tag {
-    position: absolute;
-    top: 1.1rem;
-    left: 1.3rem;
-    font-size: 0.9rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    opacity: 0.5;
-  }
+  .tile:disabled { cursor: default; filter: none; }
 
   .number {
     display: block;
-    font-size: clamp(4rem, 14vw, 10rem);
+    font-size: min(24vh, 22vw, 14rem);
     font-weight: 800;
     line-height: 1;
     letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
   }
-
   .done {
     display: block;
-    max-width: 20rem;
-    font-size: clamp(1.4rem, 3vw, 2rem);
+    max-width: 22rem;
+    font-size: clamp(1.3rem, 3vw, 2rem);
     font-weight: 700;
     line-height: 1.25;
     text-align: center;
   }
 
-  .number[hidden], .done[hidden] { display: none; }
-
-  /* ---------- Number Rush ---------- */
-
-  /* Here the tile is not a button: the numbers change by themselves. */
-  .tile.rush {
-    height: clamp(9rem, 31vh, 22rem);
-    cursor: default;
-    transition: background-color 120ms linear;
-    user-select: none;
-  }
+  /* On Number Rush the tile is not a button: the numbers change by themselves */
+  .tile.rush { cursor: default; transition: background-color 120ms linear; user-select: none; }
   .tile.rush:hover { filter: none; }
-  .tile.rush.idle { background: #F9FBFB; border: 3px dashed rgba(16, 48, 58, 0.2); color: var(--ink-soft); }
+  .tile.rush.idle { background: var(--mist); border: 3px dashed var(--line-soft); color: var(--ink-soft); }
   .tile.rush.stopped { box-shadow: inset 0 0 0 10px var(--ink); }
+
+  .timer { height: 0.6rem; margin-top: 0.6rem; border-radius: 999px; background: var(--line-soft); overflow: hidden; }
+  .timer span { display: block; height: 100%; width: 0; background: var(--ink); border-radius: 999px; }
+
+  /* ---------- Buttons ---------- */
+  .buttons { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .btn {
+    flex: 1 1 10rem;
+    height: 3.25rem; padding: 0 1.6rem;
+    border: 0; border-radius: 0.6rem;
+    font-size: 1.2rem; font-weight: 700; cursor: pointer;
+  }
+  .btn:active:not(:disabled) { transform: translateY(1px); }
+  .btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+  .btn:disabled { opacity: 0.35; cursor: default; }
+  .primary { background: var(--sea); color: #fff; }
+  .primary:hover:not(:disabled) { background: var(--sea-deep); }
+  .secondary { flex-grow: 0; background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px var(--line); }
+  .secondary:hover:not(:disabled) { box-shadow: inset 0 0 0 2px var(--ink); }
+  .stop { background: var(--coral); color: var(--ink); }
+  .stop:hover:not(:disabled) { filter: brightness(0.95); }
+
+  /* ---------- Number Rush scores ---------- */
+  .scores { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+  .score { background: var(--mist); border-radius: 0.6rem; padding: 0.4rem 0.9rem; }
+  .score b { display: block; font-size: 1.5rem; font-weight: 800; line-height: 1.15; font-variant-numeric: tabular-nums; }
+  .score small { color: var(--ink-soft); font-size: 0.9rem; }
+
+  .hint { margin: 0.2rem 0 0; color: var(--ink-soft); font-size: 0.95rem; }
+  .hint:empty { display: none; }
 
   @keyframes pop { from { transform: scale(0.82); opacity: 0.4; } to { transform: scale(1); opacity: 1; } }
   .pop { animation: pop 160ms ease-out; }
-
-  .timer { height: 10px; margin-top: 10px; border-radius: 5px; background: rgba(16, 48, 58, 0.14); overflow: hidden; }
-  .timer span { display: block; height: 100%; width: 0; background: var(--ink); border-radius: 5px; }
-
-  .scores { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
-  .score { background: #F9FBFB; border: 1px solid rgba(16, 48, 58, 0.14); border-radius: 0.9rem; padding: 6px 14px; }
-  .score b { display: block; font-size: 1.6rem; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
-  .score small { color: var(--ink-soft); font-size: 0.9rem; }
-
-  /* On this tab the message line only takes up room when there is a message */
-  #rush-error:empty { display: none; }
-  .field input:disabled { opacity: 0.5; }
-  .secondary:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  @keyframes settle {
-    from { opacity: 0; transform: translateY(0.4rem); }
-    to   { opacity: 1; transform: none; }
-  }
+  @keyframes settle { from { opacity: 0; transform: translateY(0.4rem); } to { opacity: 1; transform: none; } }
   .fresh { animation: settle 0.22s ease-out; }
 
-  .status {
-    margin: 1rem 0 0;
-    color: var(--ink-soft);
-    font-size: 0.95rem;
-  }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-  .sr {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
+  @media (max-width: 640px) {
+    .tabs { order: 3; flex-basis: 100%; }
+    .tabs button { padding: 0 0.9rem; }
+    .tile { height: clamp(10rem, 36vh, 22rem); }
+    .field input { width: 5.5rem; }
+    .score b { font-size: 1.25rem; }
   }
-
-  @media (max-width: 480px) {
-    .score b { font-size: 1.3rem; }
-    .tabs button { padding: 0 0.75rem; }
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .fresh, .pop { animation: none; }
     .tile.rush { transition: none; }
@@ -280,49 +176,49 @@
 </head>
 <body>
 <main class="page">
-  <a class="back" href="./">&larr; Selectors</a>
-
-  <header>
+  <div class="top">
     <h1>Numbers</h1>
     <div class="tabs" role="tablist" aria-label="Number games" id="tabs">
       <button type="button" role="tab" id="tab-call" data-mode="call" aria-controls="call-panel" aria-selected="true">Numbers</button>
       <button type="button" role="tab" id="tab-rush" data-mode="rush" aria-controls="rush-panel" aria-selected="false" tabindex="-1">Number Rush</button>
     </div>
-  </header>
-
-  <!-- Tab 1, Numbers: call numbers one at a time -->
-  <section id="call-panel" role="tabpanel" aria-labelledby="tab-call">
-  <p class="lead">Set a range, then call numbers one at a time — no repeats until every number's been called.</p>
-
-  <div class="controls">
-    <div class="field">
-      <label for="from">From</label>
-      <input type="number" id="from" value="1" inputmode="numeric">
-    </div>
-    <div class="field">
-      <label for="to">To</label>
-      <input type="number" id="to" value="50" inputmode="numeric">
-    </div>
-    <div class="buttons">
-      <button type="button" class="primary" id="call-btn">Call number</button>
-      <button type="button" class="secondary" id="reset-btn">Reset</button>
-    </div>
-    <p class="error" id="error"></p>
+    <a class="back" href="./">&larr; Selectors</a>
   </div>
 
-  <button type="button" class="tile" id="tile" aria-label="Click to call a number">
-    <span class="tag" aria-hidden="true">Number</span>
-    <span class="number" id="number"></span>
-    <span class="done" id="done" hidden></span>
-  </button>
+  <div class="frame">
+  <!-- Tab 1, Numbers: call numbers one at a time -->
+  <section class="panel" id="call-panel" role="tabpanel" aria-labelledby="tab-call">
+    <p class="source">Set a range, then call numbers one at a time. No repeats until every number has been called.</p>
 
-  <p class="status" id="status-line"></p>
-  <p class="sr" role="status" id="status"></p>
+    <div class="controls">
+      <div class="field">
+        <label for="from">From</label>
+        <input type="number" id="from" value="1" inputmode="numeric">
+      </div>
+      <div class="field">
+        <label for="to">To</label>
+        <input type="number" id="to" value="50" inputmode="numeric">
+      </div>
+      <p class="error" id="error"></p>
+    </div>
+
+    <button type="button" class="tile" id="tile" aria-label="Click to call a number">
+      <span class="number" id="number"></span>
+      <span class="done" id="done" hidden></span>
+    </button>
+
+    <div class="buttons">
+      <button type="button" class="btn primary" id="call-btn">Call number</button>
+      <button type="button" class="btn secondary" id="reset-btn">Reset</button>
+    </div>
+
+    <p class="hint" id="status-line"></p>
+    <p class="sr" role="status" id="status"></p>
   </section>
 
   <!-- Tab 2, Number Rush: the numbers come faster and faster -->
-  <section id="rush-panel" role="tabpanel" aria-labelledby="tab-rush" hidden>
-    <p class="lead">Say each number before the next one. Stop when you say a number incorrectly.</p>
+  <section class="panel" id="rush-panel" role="tabpanel" aria-labelledby="tab-rush" hidden>
+    <p class="source">Say each number before the next one. Stop when you say a number incorrectly.</p>
 
     <div class="controls">
       <div class="field">
@@ -333,19 +229,21 @@
         <label for="rush-to">To</label>
         <input type="number" id="rush-to" value="20" inputmode="numeric">
       </div>
-      <div class="buttons">
-        <button type="button" class="primary" id="rush-start">Start</button>
-        <button type="button" class="secondary" id="rush-stop" disabled>Stop</button>
-      </div>
       <p class="error" id="rush-error"></p>
     </div>
 
-    <div class="tile rush idle" id="rush-tile" aria-live="off">
-      <span class="tag" aria-hidden="true">Number</span>
-      <span class="number" id="rush-number" hidden></span>
-      <span class="done" id="rush-idle">Press Start</span>
+    <div>
+      <div class="tile rush idle" id="rush-tile" aria-live="off">
+        <span class="number" id="rush-number" hidden></span>
+        <span class="done" id="rush-idle">Press Start</span>
+      </div>
+      <div class="timer" aria-hidden="true"><span id="rush-bar"></span></div>
     </div>
-    <div class="timer" aria-hidden="true"><span id="rush-bar"></span></div>
+
+    <div class="buttons">
+      <button type="button" class="btn primary" id="rush-start">Start</button>
+      <button type="button" class="btn stop" id="rush-stop" disabled>Stop</button>
+    </div>
 
     <div class="scores">
       <div class="score"><b id="rush-count">0</b><small>numbers this round</small></div>
@@ -353,8 +251,9 @@
       <div class="score"><b id="rush-speed">2.0s</b><small>per number</small></div>
     </div>
 
-    <p class="status">Starts at 2 seconds and gets a little faster with every number.</p>
+    <p class="hint">Starts at 2 seconds and gets a little faster with every number.</p>
   </section>
+  </div>
 </main>
 
 <script>
