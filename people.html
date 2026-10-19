@@ -16,186 +16,103 @@
     --sea: #17677A;
     --sea-deep: #124F5E;
     --focus: #0B62A4;
+    --panel: #F9FBFB;
     --font: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, -apple-system, sans-serif;
     --tile-c: #F4B5A0;
   }
 
   *, *::before, *::after { box-sizing: border-box; }
 
-  html, body {
-    height: 100%;
-    margin: 0;
-    overflow: hidden;
-  }
-
   body {
+    margin: 0;
     background: var(--mist);
     color: var(--ink);
     font-family: var(--font);
     -webkit-text-size-adjust: 100%;
   }
+  button, textarea { font-family: var(--font); }
 
+  /* The page fills the screen, and the name tile takes whatever room is left */
   .page {
-    max-width: 1000px;
-    height: 100vh;
-    height: 100dvh;
+    max-width: 1100px;
+    min-height: 100vh;
+    min-height: 100dvh;
     margin: 0 auto;
-    padding: clamp(0.85rem, 2.6vw, 2rem);
+    padding: clamp(1rem, 3vw, 2.25rem);
     display: flex;
     flex-direction: column;
   }
 
-  .back {
-    display: inline-block;
-    flex: 0 0 auto;
-    margin-bottom: 0.6rem;
-    color: var(--ink-soft);
-    font-size: 0.95rem;
-    text-decoration: none;
-  }
+  /* ---------- Title and the way back (as on the Word Lab pages) ---------- */
+  .top { display: flex; flex-wrap: wrap; align-items: flex-end; column-gap: clamp(1rem, 2.5vw, 2rem); }
+  .top h1 { margin: 0 0 0.6rem; font-size: clamp(1.4rem, 2.8vw, 2.1rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; }
+  .back { margin: 0 0 0.75rem auto; color: var(--ink-soft); font-size: 0.9rem; text-decoration: none; white-space: nowrap; }
   .back:hover { text-decoration: underline; }
   .back:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 
-  header { flex: 0 0 auto; }
-
-  header h1 {
-    margin: 0;
-    font-size: clamp(1.4rem, 3vw, 2.5rem);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1.05;
-  }
-
-  header p {
-    margin: 0.3rem 0 0;
-    color: var(--ink-soft);
-    font-size: 1rem;
-  }
-
-  /* Controls */
-  .controls {
-    flex: 0 0 auto;
+  /* ---------- The frame everything sits on ---------- */
+  .frame {
+    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    margin: 0.85rem 0 0.85rem;
+    gap: 0.9rem;
+    background: var(--panel);
+    border-radius: 0.9rem;
+    padding: clamp(0.8rem, 2vw, 1.4rem);
   }
+  .source { margin: 0; color: var(--ink-soft); font-size: 1rem; }
 
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
+  /* Class list and group size */
+  .controls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.75rem 1.75rem; }
 
-  .field label {
-    font-weight: 600;
-    font-size: 0.95rem;
-  }
-
+  .field { flex: 1 1 22rem; display: flex; flex-direction: column; gap: 0.4rem; }
+  .field label { font-weight: 600; }
+  .field label small { color: var(--ink-soft); font-size: 0.9rem; font-weight: 500; }
   textarea#names {
     width: 100%;
-    min-height: 3.2rem;
-    max-height: 5.5rem;
-    padding: 0.55rem 0.8rem;
+    min-height: 2.75rem;
+    height: 2.75rem;
+    max-height: 7rem;
+    padding: 0.5rem 0.8rem;
     border: 2px solid var(--line);
     border-radius: 0.6rem;
     background: #fff;
     color: var(--ink);
-    font: inherit;
-    font-size: 0.95rem;
+    font-size: 1rem;
     line-height: 1.4;
     resize: vertical;
   }
-  textarea#names:focus-visible {
-    outline: 3px solid var(--focus);
-    outline-offset: 2px;
-  }
-
-  .row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.75rem 1.75rem;
-  }
+  textarea#names:hover { border-color: var(--ink); }
+  textarea#names:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 
   .group { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 0.9rem; }
   .group-label { font-weight: 600; }
-
   .choices { display: flex; flex-wrap: wrap; gap: 0.4rem; }
   .choices label { position: relative; display: block; }
-  .choices input {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    opacity: 0;
-    cursor: pointer;
-  }
+  .choices input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
   .choices span {
-    display: grid;
-    place-items: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    border: 2px solid var(--line);
-    border-radius: 0.6rem;
-    font-size: 1.1rem;
-    font-weight: 700;
+    display: grid; place-items: center;
+    min-width: 2.75rem; height: 2.75rem; padding: 0 1rem;
+    border: 2px solid var(--line); border-radius: 0.6rem;
+    font-size: 1.1rem; font-weight: 700;
     transition: background-color 0.15s, border-color 0.15s, color 0.15s;
   }
   .choices input:not(:checked):hover + span { border-color: var(--ink); }
-  .choices input:checked + span {
-    background: var(--ink);
-    border-color: var(--ink);
-    color: var(--mist);
-  }
-  .choices input:focus-visible + span {
-    outline: 3px solid var(--focus);
-    outline-offset: 3px;
-  }
+  .choices input:checked + span { background: var(--ink); border-color: var(--ink); color: var(--mist); }
+  .choices input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 3px; }
 
-  .buttons { display: flex; gap: 0.6rem; }
+  .error { margin: 0; color: #8A2E1E; font-size: 0.95rem; font-weight: 600; }
+  .error:empty { display: none; }
 
-  .primary, .secondary {
-    height: 2.75rem;
-    padding: 0 1.6rem;
-    border: 0;
-    border-radius: 0.6rem;
-    font: inherit;
-    font-size: 1.05rem;
-    font-weight: 700;
-    cursor: pointer;
-  }
-  .primary { background: var(--sea); color: #fff; }
-  .primary:hover { background: var(--sea-deep); }
-  .primary:disabled { background: var(--line); cursor: not-allowed; }
-
-  .secondary {
-    background: transparent;
-    color: var(--ink);
-    border: 2px solid var(--line);
-  }
-  .secondary:hover { border-color: var(--ink); }
-
-  .primary:active:not(:disabled), .secondary:active { transform: translateY(1px); }
-  .primary:focus-visible, .secondary:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
-
-  .error {
-    color: #8A2E1E;
-    font-size: 0.95rem;
-    font-weight: 600;
-    min-height: 1.2em;
-  }
-
-  /* Tile */
+  /* ---------- The name tile ---------- */
   .tile {
     position: relative;
+    flex: 1 1 auto;
+    min-height: 11rem;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
-    flex: 1 1 auto;
-    min-height: 0;
     padding: clamp(1rem, 3vw, 2rem);
     border: 0;
     border-radius: 0.9rem;
@@ -206,32 +123,21 @@
     cursor: pointer;
     text-align: center;
   }
-  .tile:hover { filter: brightness(0.96); }
+  .tile:hover { filter: brightness(0.97); }
   .tile:focus-visible { outline: 4px solid var(--focus); outline-offset: 3px; }
-  .tile:disabled { cursor: default; }
+  .tile:disabled { cursor: default; filter: none; }
 
-  .tag {
-    position: absolute;
-    top: 1.1rem;
-    left: 1.3rem;
-    font-size: 0.9rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    opacity: 0.5;
-  }
-
+  /* Sized by the script so the names always fit the tile */
   .names-display {
+    position: absolute;
+    inset: clamp(1rem, 3vw, 2rem);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 0.15em;
-    max-width: 100%;
-    max-height: 100%;
     overflow: hidden;
   }
-
   .names-display .name {
     font-weight: 800;
     line-height: 1.05;
@@ -240,86 +146,79 @@
     white-space: nowrap;
   }
 
-  .names-display[hidden] { display: none; }
-
-  @keyframes settle {
-    from { opacity: 0; transform: translateY(0.4rem); }
-    to   { opacity: 1; transform: none; }
+  /* ---------- Buttons ---------- */
+  .buttons { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .btn {
+    height: 3.25rem; padding: 0 1.6rem;
+    border: 0; border-radius: 0.6rem;
+    font-size: 1.2rem; font-weight: 700; cursor: pointer;
   }
+  .btn:active:not(:disabled) { transform: translateY(1px); }
+  .btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+  .btn:disabled { opacity: 0.35; cursor: default; }
+  .primary { flex: 1 1 10rem; background: var(--sea); color: #fff; }
+  .primary:hover:not(:disabled) { background: var(--sea-deep); }
+  .secondary { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px var(--line); }
+  .secondary:hover:not(:disabled) { box-shadow: inset 0 0 0 2px var(--ink); }
+
+  .hint { margin: 0; color: var(--ink-soft); font-size: 0.95rem; }
+  .hint:empty { display: none; }
+
+  @keyframes settle { from { opacity: 0; transform: translateY(0.4rem); } to { opacity: 1; transform: none; } }
   .fresh { animation: settle 0.22s ease-out; }
 
-  .status {
-    flex: 0 0 auto;
-    margin: 0.6rem 0 0;
-    color: var(--ink-soft);
-    font-size: 0.95rem;
-  }
-
-  .sr {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-  }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
   @media (prefers-reduced-motion: reduce) {
     .fresh { animation: none; }
+    .choices span { transition: none; }
   }
 
-  /* Short viewports (small windows, landscape phones): trim the chrome so
-     the tile — the part that actually needs the room — still gets it. */
-  @media (max-height: 480px) {
+  /* Short screens (small windows, landscape phones): trim the extras so the tile keeps its room */
+  @media (max-height: 520px) {
     .page { padding-top: 0.5rem; padding-bottom: 0.5rem; }
-    .back { margin-bottom: 0.3rem; font-size: 0.85rem; }
-    header p { display: none; }
-    header h1 { font-size: 1.15rem; }
-    .controls { gap: 0.4rem; margin: 0.5rem 0; }
-    textarea#names { min-height: 2.2rem; max-height: 2.6rem; font-size: 0.85rem; padding: 0.35rem 0.6rem; }
-    .row { gap: 0.4rem 1rem; }
-    .choices span { width: 2.1rem; height: 2.1rem; font-size: 0.95rem; }
-    .primary, .secondary { height: 2.1rem; padding: 0 1rem; font-size: 0.9rem; }
-    .error { font-size: 0.8rem; min-height: 1em; }
-    .status { font-size: 0.8rem; margin-top: 0.35rem; }
-    .tag { font-size: 0.75rem; top: 0.6rem; left: 0.8rem; }
+    .source { display: none; }
+    .frame { gap: 0.5rem; }
+    .choices span { min-width: 2.2rem; height: 2.2rem; font-size: 0.95rem; }
+    textarea#names { min-height: 2.2rem; height: 2.2rem; }
+    .btn { height: 2.4rem; font-size: 1rem; }
+    .tile { min-height: 7rem; }
   }
 </style>
 </head>
 <body>
 <main class="page">
-  <a class="back" href="./">&larr; Selectors</a>
-
-  <header>
+  <div class="top">
     <h1>People</h1>
-    <p>Enter names, then pick one at a time or in groups — everyone comes up once before anyone repeats.</p>
-  </header>
+    <a class="back" href="./">&larr; Selectors</a>
+  </div>
 
-  <div class="controls">
-    <div class="field">
-      <label for="names">Class list (one name per line, or separate with commas)</label>
-      <textarea id="names" placeholder="insert names"></textarea>
-    </div>
+  <div class="frame">
+    <p class="source">Enter names, then pick one at a time or in groups. Everyone comes up once before anyone repeats.</p>
 
-    <div class="row">
+    <div class="controls">
+      <div class="field">
+        <label for="names">Class list <small>one name per line, or separate with commas</small></label>
+        <textarea id="names" placeholder="Ana, Ben, Carla…"></textarea>
+      </div>
       <div class="group" role="radiogroup" aria-labelledby="size-label">
         <span class="group-label" id="size-label">Students per pick</span>
         <div class="choices" id="size-options"></div>
       </div>
-      <div class="buttons">
-        <button type="button" class="primary" id="pick-btn">Pick</button>
-        <button type="button" class="secondary" id="reset-btn">Reset</button>
-      </div>
+      <p class="error" id="error"></p>
     </div>
-    <p class="error" id="error"></p>
+
+    <button type="button" class="tile" id="tile" aria-label="Click to pick">
+      <span class="names-display" id="names-display"></span>
+    </button>
+
+    <div class="buttons">
+      <button type="button" class="btn primary" id="pick-btn">Pick</button>
+      <button type="button" class="btn secondary" id="reset-btn">Reset</button>
+    </div>
+
+    <p class="hint" id="status-line"></p>
   </div>
-
-  <button type="button" class="tile" id="tile" aria-label="Click to pick">
-    <span class="tag" aria-hidden="true">Students</span>
-    <span class="names-display" id="names-display"></span>
-  </button>
-
-  <p class="status" id="status-line"></p>
   <p class="sr" role="status" id="status"></p>
 </main>
 
