@@ -6,7 +6,7 @@
 <title>Ask the Turning Tide</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
@@ -20,18 +20,40 @@
     overflow: hidden;
   }
 
-  .back {
+  /* A quiet title and the way back, laid over the blue (same layout as the other pages' headers) */
+  .top {
     position: fixed;
-    top: max(20px, env(safe-area-inset-top, 0px));
-    left: 20px;
+    top: 0; left: 0; right: 0;
     z-index: 2;
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: max(clamp(1rem, 3vw, 2.25rem), env(safe-area-inset-top, 0px)) clamp(1rem, 3vw, 2.25rem) 0;
+    font-family: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+    color: #10303A;
+    pointer-events: none;      /* taps anywhere still reach the board… */
+  }
+  .top h1 {
+    margin: 0;
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    opacity: 0.55;
+  }
+  .back {
+    margin-left: auto;
+    font-size: 0.9rem;
     color: #10303A;
     opacity: 0.7;
     text-decoration: none;
+    white-space: nowrap;
+    pointer-events: auto;      /* …except the link itself */
   }
   .back:hover { opacity: 1; text-decoration: underline; }
+  .back:focus-visible { opacity: 1; outline: 3px solid #0B62A4; outline-offset: 3px; border-radius: 2px; }
 
   button.stage {
     appearance: none;
@@ -88,8 +110,9 @@
     left: 0;
     right: 0;
     text-align: center;
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
+    font-family: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 13px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: #10303A;
@@ -103,7 +126,10 @@
 </head>
 <body>
 
-<a class="back" href="./">&larr; Selectors</a>
+<header class="top">
+  <h1>Ask the Turning Tide</h1>
+  <a class="back" href="./">&larr; Selectors</a>
+</header>
 
 <button class="stage" id="stage" aria-label="Ask the board">
   <div class="board">
@@ -128,6 +154,8 @@
     "Don't count on it.",
     "All signs point to NO.",
     "Probably not.",
+    "Not now.",
+    "The system is sleeping.",
     "Can you repeat that, please?",
     "Ask again later.",
     "Ask again later.",
@@ -227,6 +255,7 @@
 
   stageEl.addEventListener('click', ask);
   window.addEventListener('keydown', (e) => {
+    if (e.target.closest && e.target.closest('.back')) return;   // Enter on the link still goes back
     if (e.code === 'Space' || e.code === 'Enter') {
       e.preventDefault();
       ask();
